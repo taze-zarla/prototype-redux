@@ -6,11 +6,13 @@ import {
   Redirect,
 } from 'react-router-dom'
 
-import { PostsLists } from './features/posts/PostsList'
+import { Counter } from './features/counter/Counter'
+import { AddPostForm } from './features/posts/AddPostForm'
+import { PostsList } from './features/posts/PostsList'
+import { SearchForm } from './features/colors/SearchForm'
+import { ColorsList } from './features/colors/ColorsList'
 
 import './App.css'
-import { AddPostForm } from './features/posts/AddPostForm'
-import { Counter } from './features/counter/Counter'
 
 function App() {
   return (
@@ -24,7 +26,9 @@ function App() {
               <>
                 <Counter />
                 <AddPostForm />
-                <PostsLists />
+                <PostsList />
+                <SearchForm />
+                <ColorsList />
               </>
             )}
           />
