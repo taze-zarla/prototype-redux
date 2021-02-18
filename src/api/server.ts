@@ -29,10 +29,11 @@ export function makeServer({ environment = "test" }) {
     environment,
     routes() {
       this.namespace = 'fakeApi'
-      this.timing = 1000
+      this.timing = 5000
 
       this.get('/colors/:keywords', (schema, req) => {
         const keywords = req.params.keywords
+        console.log('keywords: ', keywords)
 
         if (!keywords || keywords === 'default') {
           return {

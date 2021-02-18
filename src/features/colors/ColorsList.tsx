@@ -17,21 +17,27 @@ export const ColorsList = () => {
 
   const renderedColors = colors.colors.map(color => (
     <div
-      className="color-wrapper pl-5"
+      className="color-wrapper"
       key={color.id}
-      style={{userSelect: 'none'}}
+      style={{
+        width: '100px',
+        height: '100px',
+        userSelect: 'none'
+      }}
     >
-      <span
+      <div
         className="color"
         style={{
+          width: '100%',
+          height: '100%',
           backgroundColor: color.hex,
-          cursor: 'pointer'
+          cursor: 'pointer',
+          outline: color.selected ? `5px green solid` : 'none'
         }}
         onClick={() => dispatch(toggleColorSelected(color))}
       >
         {color.name}
-      </span>
-      <span>&lt;= {color.selected ? 'active' : 'not active'}</span>
+      </div>
     </div>
   ))
 
@@ -39,7 +45,14 @@ export const ColorsList = () => {
     <section className="colors-list">
       <h2>Colors!</h2>
       <p>status of fetchColors: {colorsStatus}</p>
-      {renderedColors}
+      <div
+        style={{
+          display: 'flex',
+          flexWrap: 'wrap',
+        }}
+      >
+        {renderedColors}
+      </div>
     </section>
   )
 }

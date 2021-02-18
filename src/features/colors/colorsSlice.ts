@@ -22,10 +22,19 @@ const initialState: ColorsState = {
   error: null
 }
 
-export const fetchColors = createAsyncThunk('colors/fetchColors', async (keywords: string) => {
-  const response = await client.get<{colors: Color[]}>(`/fakeApi/colors/${keywords}`)
-  return response.colors
-})
+export const fetchColors = createAsyncThunk(
+  'colors/fetchColors',
+  async (keywords: string) => {
+    const response = await client.get<{colors: Color[]}>(`/fakeApi/colors/${keywords}`)
+    return response.colors
+  },
+  {
+    condition: (arg, api) => {
+      const { colors } = api.getState() as { colors: ColorsState } //FIXME: proper typing via createAsyncThunk<Return, void, {state: RootState}>?
+      return colors.status !== 'fetching'
+    }
+  }
+)
 
 export const colorsSlice = createSlice({
   name: 'colors',
