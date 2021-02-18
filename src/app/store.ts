@@ -1,17 +1,17 @@
 import { configureStore, ThunkAction, Action } from '@reduxjs/toolkit'
-import counterReducer from '../features/counter/counterSlice'
-import postsReducer from '../features/posts/postsSlice'
 import colorsReducer from '../features/colors/colorsSlice'
+import { TypedUseSelectorHook, useDispatch, useSelector } from 'react-redux'
 
 export const store = configureStore({
   reducer: {
-    counter: counterReducer, //Not part of social media tutorial, kept for sake of counterSlice.ts not throwing error
-    posts: postsReducer,
     colors: colorsReducer
   },
 })
 
 export type RootState = ReturnType<typeof store.getState>
+export type AppDispatch = typeof store.dispatch
+export const useAppDispatch = () => useDispatch<AppDispatch>()
+export const useTypedSelector: TypedUseSelectorHook<RootState> = useSelector
 export type AppThunk<ReturnType = void> = ThunkAction<
   ReturnType,
   RootState,

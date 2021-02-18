@@ -1,13 +1,13 @@
 import React, { useEffect } from 'react'
-import { useDispatch, useSelector } from 'react-redux'
+import { useAppDispatch, useTypedSelector } from '../../app/store'
 
-import { fetchColors, selectColors, selectColorsStatus, toggleColorSelected } from './colorsSlice'
+import { fetchColors, toggleColorSelected } from './colorsSlice'
 
 export const ColorsList = () => {
-  const colors = useSelector(selectColors)
-  const colorsStatus = useSelector(selectColorsStatus)
+  const colors = useTypedSelector(state => state.colors)
+  const colorsStatus = useTypedSelector(state => state.colors.status)
 
-  const dispatch = useDispatch()
+  const dispatch = useAppDispatch()
 
   useEffect(() => {
     if (colorsStatus === 'idle') {
@@ -38,6 +38,7 @@ export const ColorsList = () => {
   return (
     <section className="colors-list">
       <h2>Colors!</h2>
+      <p>status of fetchColors: {colorsStatus}</p>
       {renderedColors}
     </section>
   )

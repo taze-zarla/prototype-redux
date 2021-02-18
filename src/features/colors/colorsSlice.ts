@@ -1,6 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { client } from '../../api/client'
-import { AppThunk, RootState } from '../../app/store'
+import { AppThunk } from '../../app/store'
 import { randomHexColor } from '../../commons/randomHexColor'
 import { sleep } from '../../commons/sleep'
 export interface Color {
@@ -22,6 +22,11 @@ const initialState: ColorsState = {
   error: null
 }
 
+export const fetchColors = createAsyncThunk('colors/fetchColors', async (keywords: string) => {
+  const response = await client.get<{colors: Color[]}>(`/fakeApi/colors/${keywords}`)
+  return response.colors
+})
+
 export const colorsSlice = createSlice({
   name: 'colors',
   initialState,
@@ -36,6 +41,19 @@ export const colorsSlice = createSlice({
     colorAdded(state, action: PayloadAction<Color>) {
       state.colors.push(action.payload)
     }
+  },
+  extraReducers: {
+    [fetchColors.pending.type]: (state, action) => {
+      state.status = 'fetching'
+    },
+    [fetchColors.fulfilled.type]: (state, action: PayloadAction<Color[]>) => {
+      state.status = 'succeeded'
+      state.colors = action.payload
+    },
+    [fetchColors.rejected.type]: (state, action) => { //FIXME: proper typing for action.error.message?
+      state.status = 'failed'
+      state.colors = action.error.message
+    },
   }
 })
 
@@ -53,13 +71,5 @@ export const addRandomColor = (): AppThunk => async (dispatch) => {
     selected: false
   }))
 }
-
-export const fetchColors = createAsyncThunk('colors/fetchColors', async (keywords: string) => {
-  const response = await client.get<{colors: Color[]}>(`/fakeApi/colors/${keywords}`)
-  return response.colors
-})
-
-export const selectColors = (state: RootState) => state.colors
-export const selectColorsStatus = (state: RootState) => state.colors.status
 
 export default colorsSlice.reducer
