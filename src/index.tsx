@@ -9,9 +9,9 @@ import { makeServer } from './api/server'
 
 const environment = process.env.NODE_ENV
 
-if (environment !== 'production') {
+// if (environment !== 'production') {
   makeServer({ environment })
-}
+// }
 
 ReactDOM.render(
   <React.StrictMode>
