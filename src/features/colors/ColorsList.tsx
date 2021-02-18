@@ -1,12 +1,19 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 
-import { selectColors, toggleColorSelected } from './colorsSlice'
+import { fetchColors, selectColors, selectColorsStatus, toggleColorSelected } from './colorsSlice'
 
 export const ColorsList = () => {
   const colors = useSelector(selectColors)
+  const colorsStatus = useSelector(selectColorsStatus)
 
   const dispatch = useDispatch()
+
+  useEffect(() => {
+    if (colorsStatus === 'idle') {
+      dispatch(fetchColors('default'))
+    }
+  }, [colorsStatus, dispatch])
 
   const renderedColors = colors.colors.map(color => (
     <div

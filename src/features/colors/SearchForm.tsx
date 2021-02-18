@@ -1,20 +1,21 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useDebouncedCallback } from 'use-debounce/lib'
-import { fetchDefaultColors } from './colorsSlice'
+import { fetchColors } from './colorsSlice'
 // import { addRandomColor } from './colorsSlice'
 
 export const SearchForm = () => {
   const [keywords, setKeywords] = useState<string>('')
 
-  const dispatch = useDispatch()
-
-  const debouncedDispatch = useDebouncedCallback(dispatch, 500)
+  const debouncedDispatch = useDebouncedCallback(useDispatch(), 500)
 
   const onKeywordsChanged = (e: React.FormEvent<HTMLInputElement>) => {
-    setKeywords(e.currentTarget.value)
+    const term = e.currentTarget.value
+    setKeywords(term)
     // debouncedDispatch.callback(addRandomColor())
-    debouncedDispatch.callback(fetchDefaultColors())
+    if (term) {
+      debouncedDispatch.callback(fetchColors(term))
+    }
   }
 
   return <div>

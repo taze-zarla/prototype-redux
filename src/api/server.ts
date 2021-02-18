@@ -1,4 +1,5 @@
 import { createServer } from 'miragejs'
+import { randomHexColor } from '../commons/randomHexColor'
 
 import { Color } from '../features/colors/colorsSlice'
 
@@ -28,10 +29,32 @@ export function makeServer({ environment = "test" }) {
     environment,
     routes() {
       this.namespace = 'fakeApi'
+      this.timing = 1000
 
-      this.get('/colors', () => {
+      this.get('/colors/:keywords', (schema, req) => {
+        const keywords = req.params.keywords
+
+        if (!keywords || keywords === 'default') {
+          return {
+            colors: defaultColorsArr
+          }
+        }
+
+        const length = keywords.length
+        let randomColors: Color[] = []
+
+        for (let i = 0; i < length; i++) {
+          const randomHex = randomHexColor()
+          randomColors.push({
+            id: randomHex,
+            hex: randomHex,
+            name: randomHex,
+            selected: false
+          })
+        }
+
         return {
-          colors: defaultColorsArr
+          colors: randomColors
         }
       })
     }

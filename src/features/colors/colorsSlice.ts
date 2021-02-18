@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { client } from '../../api/client'
 import { AppThunk, RootState } from '../../app/store'
+import { randomHexColor } from '../../commons/randomHexColor'
 import { sleep } from '../../commons/sleep'
 export interface Color {
   id: string,
@@ -40,28 +41,25 @@ export const colorsSlice = createSlice({
 
 export const { toggleColorSelected, colorAdded } = colorsSlice.actions
 
-export const addRandomColor = (): AppThunk => dispatch => {
-  async function addRandom() {
-    await sleep(5000)
+export const addRandomColor = (): AppThunk => async (dispatch) => {
+  await sleep(5000)
 
-    const randomColor = `#${Math.floor(Math.random()*16777215).toString(16)}`
+  const randomColor = randomHexColor()
 
-    dispatch(colorAdded({
-      id: randomColor,
-      hex: randomColor,
-      name: randomColor,
-      selected: false
-    }))
-  }
-
-  addRandom()
+  dispatch(colorAdded({
+    id: randomColor,
+    hex: randomColor,
+    name: randomColor,
+    selected: false
+  }))
 }
 
-export const fetchDefaultColors = createAsyncThunk('colors/fetchDefaultColors', async () => {
-  const response = await client.get<{colors: Color[]}>('/fakeApi/colors')
+export const fetchColors = createAsyncThunk('colors/fetchColors', async (keywords: string) => {
+  const response = await client.get<{colors: Color[]}>(`/fakeApi/colors/${keywords}`)
   return response.colors
 })
 
 export const selectColors = (state: RootState) => state.colors
+export const selectColorsStatus = (state: RootState) => state.colors.status
 
 export default colorsSlice.reducer
