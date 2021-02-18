@@ -6,9 +6,6 @@ import {
   Redirect,
 } from 'react-router-dom'
 
-import { Counter } from './features/counter/Counter'
-import { AddPostForm } from './features/posts/AddPostForm'
-import { PostsList } from './features/posts/PostsList'
 import { SearchForm } from './features/colors/SearchForm'
 import { ColorsList } from './features/colors/ColorsList'
 
@@ -24,9 +21,6 @@ function App() {
             path="/"
             render={() => (
               <>
-                <Counter />
-                <AddPostForm />
-                <PostsList />
                 <SearchForm />
                 <ColorsList />
               </>

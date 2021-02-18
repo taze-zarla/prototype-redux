@@ -1,7 +1,7 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit"
-import { AppThunk, RootState } from "../../app/store"
-import { sleep } from "../../commons/sleep"
-
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
+import { client } from '../../api/client'
+import { AppThunk, RootState } from '../../app/store'
+import { sleep } from '../../commons/sleep'
 export interface Color {
   id: string,
   hex: string,
@@ -9,42 +9,31 @@ export interface Color {
   selected: boolean,
 }
 
-type ColorsState = Color[]
+interface ColorsState {
+  colors: Color[]
+  status: 'idle' | 'fetching' | 'succeeded' | 'failed'
+  error: string | null
+}
 
-const initialState: ColorsState = [
-  {
-    id: '#ff0000',
-    hex: '#ff0000',
-    name: 'red',
-    selected: false
-  },
-  {
-    id: '#00ff00',
-    hex: '#00ff00',
-    name: 'green',
-    selected: false
-  },
-  {
-    id: '#0000ff',
-    hex: '#0000ff',
-    name: 'blue',
-    selected: false
-  },
-]
+const initialState: ColorsState = {
+  colors: [],
+  status: 'idle',
+  error: null
+}
 
 export const colorsSlice = createSlice({
   name: 'colors',
   initialState,
   reducers: {
     toggleColorSelected(state, action: PayloadAction<Color>) {
-      const color = state.find(color => color.id === action.payload.id)
+      const color = state.colors.find(color => color.id === action.payload.id)
 
       if (color) {
         color.selected = !color.selected
       }
     },
     colorAdded(state, action: PayloadAction<Color>) {
-      state.push(action.payload)
+      state.colors.push(action.payload)
     }
   }
 })
@@ -67,6 +56,11 @@ export const addRandomColor = (): AppThunk => dispatch => {
 
   addRandom()
 }
+
+export const fetchDefaultColors = createAsyncThunk('colors/fetchDefaultColors', async () => {
+  const response = await client.get<{colors: Color[]}>('/fakeApi/colors')
+  return response.colors
+})
 
 export const selectColors = (state: RootState) => state.colors
 

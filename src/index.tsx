@@ -5,6 +5,13 @@ import App from './App'
 import { store } from './app/store'
 import { Provider } from 'react-redux'
 import * as serviceWorker from './serviceWorker'
+import { makeServer } from './api/server'
+
+const environment = process.env.NODE_ENV
+
+if (environment !== 'production') {
+  makeServer({ environment })
+}
 
 ReactDOM.render(
   <React.StrictMode>

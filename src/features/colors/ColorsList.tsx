@@ -8,7 +8,7 @@ export const ColorsList = () => {
 
   const dispatch = useDispatch()
 
-  const renderedColors = colors.map(color => (
+  const renderedColors = colors.colors.map(color => (
     <div
       className="color-wrapper pl-5"
       key={color.id}
