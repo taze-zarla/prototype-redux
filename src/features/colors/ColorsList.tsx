@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react'
-import { useAppDispatch, useTypedSelector } from '../../app/store'
+import { useDispatch } from 'react-redux'
+import { useTypedSelector } from '../../app/store'
 
 import { fetchColors, toggleColorSelected } from './colorsSlice'
 
@@ -7,7 +8,7 @@ export const ColorsList = () => {
   const colors = useTypedSelector(state => state.colors)
   const colorsStatus = useTypedSelector(state => state.colors.status)
 
-  const dispatch = useAppDispatch()
+  const dispatch = useDispatch()
 
   useEffect(() => {
     if (colorsStatus === 'idle') {

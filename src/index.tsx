@@ -2,7 +2,7 @@ import React from 'react'
 import ReactDOM from 'react-dom'
 import './index.css'
 import App from './App'
-import { store } from './app/store'
+import configureStore from './app/store'
 import { Provider } from 'react-redux'
 import * as serviceWorker from './serviceWorker'
 import { makeServer } from './api/server'
@@ -12,6 +12,9 @@ const environment = process.env.NODE_ENV
 // if (environment !== 'production') {
   makeServer({ environment })
 // }
+
+const initialState = {}
+const store = configureStore(initialState)
 
 ReactDOM.render(
   <React.StrictMode>

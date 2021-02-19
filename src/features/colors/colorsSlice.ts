@@ -1,8 +1,6 @@
 import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
 import { client } from '../../api/client'
-import { AppThunk } from '../../app/store'
-import { randomHexColor } from '../../commons/randomHexColor'
-import { sleep } from '../../commons/sleep'
+
 export interface Color {
   id: string,
   hex: string,
@@ -68,18 +66,5 @@ export const colorsSlice = createSlice({
 })
 
 export const { toggleColorSelected, colorAdded } = colorsSlice.actions
-
-export const addRandomColor = (): AppThunk => async (dispatch) => {
-  await sleep(5000)
-
-  const randomColor = randomHexColor()
-
-  dispatch(colorAdded({
-    id: randomColor,
-    hex: randomColor,
-    name: randomColor,
-    selected: false
-  }))
-}
 
 export default colorsSlice.reducer
