@@ -31,7 +31,8 @@ export const fetchColors = createAsyncThunk(
   {
     condition: (arg, api) => {
       const { colors } = api.getState() as { colors: ColorsState } //FIXME: proper typing via createAsyncThunk<Return, void, {state: RootState}>?
-      return colors.status !== 'fetching'
+      const { status } = colors
+      return status !== 'fetching'
     }
   }
 )
@@ -59,7 +60,7 @@ export const colorsSlice = createSlice({
       state.status = 'succeeded'
       state.colors = action.payload
     },
-    [fetchColors.rejected.type]: (state, action) => { //FIXME: proper typing for action.error.message?
+    [fetchColors.rejected.type]: (state, action) => { //FIXME: proper typing for action
       state.status = 'failed'
       state.colors = action.error.message
     },
