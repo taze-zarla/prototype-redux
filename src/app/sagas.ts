@@ -1,32 +1,35 @@
 import { createAction } from '@reduxjs/toolkit'
-import { all, call, delay, put, takeEvery } from 'redux-saga/effects'
-import { randomHexColor } from '../commons/randomHexColor'
-import { Color, colorAdded } from '../features/colors/colorsSlice'
+import { all, call, put, takeLatest } from 'redux-saga/effects'
+import { clientGet } from '../api/client'
+import { CallReturnType } from './sagaTypes'
 
-export function* asyncAddRandomColor() {
-  yield delay(5000)
+/**
+ * Call mock fetch colors API
+ */
+export const actionFetchColors = createAction<string>('COLORS_REQUESTED')
 
-  const randomHex = randomHexColor()
-
-  const randomColor: Color = {
-    id: randomHex,
-    hex: randomHex,
-    name: randomHex,
-    selected: false
+//FIXME: Need proper Typescript assessment/application
+function* fetchColors(action: CallReturnType<typeof actionFetchColors>) {
+  try {
+    const response = yield call(clientGet, `fakeApi/colors/${action.payload}`)
+    const { colors } = response
+    yield put({
+      type: 'COLORS_RECEIVED',
+      payload: colors
+    })
   }
-
-  yield put(colorAdded(randomColor))
+  catch(error) {
+    yield put({ type: 'COLORS_REQUEST_FAILED', error })
+  }
 }
 
-export function* watchAsyncAddRandomColor() {
-  yield takeEvery('ASYNC_ADD_RANDOM_COLOR', asyncAddRandomColor)
+function* watchFetchColors() {
+  yield takeLatest('COLORS_REQUESTED', fetchColors)
 }
-
-export const actionAsyncAddColor = createAction<void | undefined>('ASYNC_ADD_RANDOM_COLOR')
 
 // single entry point to start all Sagas at once
 export default function* rootSaga() {
   yield all([
-    call(watchAsyncAddRandomColor),
+    call(watchFetchColors)
   ])
 }

@@ -1,8 +1,7 @@
 import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { useDebouncedCallback } from 'use-debounce/lib'
-import { actionAsyncAddColor } from '../../app/sagas'
-import { fetchColors } from './colorsSlice'
+import { actionFetchColors } from '../../app/sagas'
 
 export const SearchForm = () => {
   const [keywords, setKeywords] = useState<string>('')
@@ -14,10 +13,9 @@ export const SearchForm = () => {
   const onKeywordsChanged = (e: React.FormEvent<HTMLInputElement>) => {
     const term = e.currentTarget.value
     setKeywords(term)
-    dispatch(actionAsyncAddColor())
 
-    if (term && false) {
-      debouncedDispatch.callback(fetchColors(term))
+    if (term) {
+      debouncedDispatch.callback(actionFetchColors(term))
     }
   }
 

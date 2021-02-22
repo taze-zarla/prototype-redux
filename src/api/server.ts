@@ -29,7 +29,7 @@ export function makeServer({ environment = "test" }) {
     environment,
     routes() {
       this.namespace = 'fakeApi'
-      this.timing = 5000
+      this.timing = 3000
 
       this.get('/colors/:keywords', (schema, req) => {
         const keywords = req.params.keywords

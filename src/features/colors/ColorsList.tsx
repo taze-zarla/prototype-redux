@@ -1,8 +1,8 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
+import { actionFetchColors } from '../../app/sagas'
 import { useTypedSelector } from '../../app/store'
-
-import { fetchColors, toggleColorSelected } from './colorsSlice'
+import { toggleColorSelected } from './colorsSlice'
 
 export const ColorsList = () => {
   const colors = useTypedSelector(state => state.colors)
@@ -12,7 +12,7 @@ export const ColorsList = () => {
 
   useEffect(() => {
     if (colorsStatus === 'idle') {
-      dispatch(fetchColors('default'))
+      dispatch(actionFetchColors('default'))
     }
   }, [colorsStatus, dispatch])
 
@@ -45,7 +45,7 @@ export const ColorsList = () => {
   return (
     <section className="colors-list">
       <h2>Colors!</h2>
-      <p>status of fetchColors: {colorsStatus}</p>
+      <p>status of asyncFetchColors: {colorsStatus}</p>
       <div
         style={{
           display: 'flex',

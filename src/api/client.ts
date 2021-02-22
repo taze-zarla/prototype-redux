@@ -31,11 +31,11 @@ export async function client<T>(endpoint: string, requestOptions: RequestInit = 
   }
 }
 
-client.get = function<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
+export function clientGet<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
   return client<T>(endpoint, { ...requestOptions, method: 'GET' })
 }
 
-client.post = function<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
+export function clientPost<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
   const { body, ...customConfig } = requestOptions
 
   return client<T>(endpoint, { ...customConfig, body })

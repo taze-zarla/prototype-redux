@@ -1,5 +1,4 @@
-import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit'
-import { client } from '../../api/client'
+import { createSlice, PayloadAction } from '@reduxjs/toolkit'
 
 export interface Color {
   id: string,
@@ -10,7 +9,7 @@ export interface Color {
 
 interface ColorsState {
   colors: Color[]
-  status: 'idle' | 'fetching' | 'succeeded' | 'failed'
+  status: 'idle' | 'requesting' | 'succeeded' | 'failed'
   error: string | null
 }
 
@@ -19,21 +18,6 @@ const initialState: ColorsState = {
   status: 'idle',
   error: null
 }
-
-export const fetchColors = createAsyncThunk(
-  'colors/fetchColors',
-  async (keywords: string) => {
-    const response = await client.get<{colors: Color[]}>(`/fakeApi/colors/${keywords}`)
-    return response.colors
-  },
-  {
-    condition: (arg, api) => {
-      const { colors } = api.getState() as { colors: ColorsState } //FIXME: proper typing via createAsyncThunk<Return, void, {state: RootState}>?
-      const { status } = colors
-      return status !== 'fetching'
-    }
-  }
-)
 
 export const colorsSlice = createSlice({
   name: 'colors',
@@ -45,26 +29,28 @@ export const colorsSlice = createSlice({
       if (color) {
         color.selected = !color.selected
       }
-    },
-    colorAdded(state, action: PayloadAction<Color>) {
-      state.colors.push(action.payload)
     }
   },
   extraReducers: {
-    [fetchColors.pending.type]: (state, action) => {
-      state.status = 'fetching'
+    /**
+     * TODO: apply best practice for 'STUFF_HAPPENED': (S, A) => {...}
+     * for saga-related actions.
+     * Most probably should be [actionVariable.type]: (S, A) => {...}
+     */
+    'COLORS_REQUESTED': (state, action) => {
+      state.status = 'requesting'
     },
-    [fetchColors.fulfilled.type]: (state, action: PayloadAction<Color[]>) => {
+    'COLORS_RECEIVED': (state, action: PayloadAction<Color[]>) => {
+      state.colors.push(...action.payload)
       state.status = 'succeeded'
-      state.colors = action.payload
     },
-    [fetchColors.rejected.type]: (state, action) => { //FIXME: proper typing for action
+    'COLORS_REQUEST_FAILED': (state, action) => {//FIXME: proper typing for action?
+      state.error = action.error
       state.status = 'failed'
-      state.colors = action.error.message
     },
   }
 })
 
-export const { toggleColorSelected, colorAdded } = colorsSlice.actions
+export const { toggleColorSelected } = colorsSlice.actions
 
 export default colorsSlice.reducer
