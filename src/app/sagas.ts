@@ -1,30 +1,27 @@
-import { createAction } from '@reduxjs/toolkit'
 import { all, call, put, takeLatest } from 'redux-saga/effects'
 import { clientGet } from '../api/client'
+import { colorsReceived, colorsRequested, colorsRequestFailed } from '../commons/actions'
 import { CallReturnType } from './sagaTypes'
 
 /**
  * Call mock fetch colors API
  */
-export const actionFetchColors = createAction<string>('COLORS_REQUESTED')
 
-//FIXME: Need proper Typescript assessment/application
-function* fetchColors(action: CallReturnType<typeof actionFetchColors>) {
+// FIXME: Need proper Typescript assessment/application
+function* fetchColors(action: CallReturnType<typeof colorsRequested>) {
   try {
+    // FIXME: proper typing for response
     const response = yield call(clientGet, `fakeApi/colors/${action.payload}`)
     const { colors } = response
-    yield put({
-      type: 'COLORS_RECEIVED',
-      payload: colors
-    })
+    yield put(colorsReceived(colors))
   }
   catch(error) {
-    yield put({ type: 'COLORS_REQUEST_FAILED', error })
+    yield put(colorsRequestFailed(error))
   }
 }
 
 function* watchFetchColors() {
-  yield takeLatest('COLORS_REQUESTED', fetchColors)
+  yield takeLatest(colorsRequested, fetchColors)
 }
 
 // single entry point to start all Sagas at once

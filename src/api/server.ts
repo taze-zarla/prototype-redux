@@ -1,7 +1,7 @@
 import { createServer } from 'miragejs'
 import { randomHexColor } from '../commons/randomHexColor'
 
-import { Color } from '../features/colors/colorsSlice'
+import { Color } from '../features/colors/colorsReducer'
 
 const defaultColorsArr: Color[] = [
   {

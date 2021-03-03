@@ -1,4 +1,4 @@
-//https://spin.atomicobject.com/2020/08/06/redux-saga-call-effect/
+// https://spin.atomicobject.com/2020/08/06/redux-saga-call-effect/
 import { Effect, SimpleEffect } from "redux-saga/effects";
 
 /** Strip any saga effects from a type; this is typically useful to get the return type of a saga. */

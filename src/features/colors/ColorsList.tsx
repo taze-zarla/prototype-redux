@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react'
 import { useDispatch } from 'react-redux'
-import { actionFetchColors } from '../../app/sagas'
 import { useTypedSelector } from '../../app/store'
-import { toggleColorSelected } from './colorsSlice'
+import { colorsRequested, colorToggled } from '../../commons/actions'
 
 export const ColorsList = () => {
   const colors = useTypedSelector(state => state.colors)
@@ -12,7 +11,7 @@ export const ColorsList = () => {
 
   useEffect(() => {
     if (colorsStatus === 'idle') {
-      dispatch(actionFetchColors('default'))
+      dispatch(colorsRequested('default'))
     }
   }, [colorsStatus, dispatch])
 
@@ -35,7 +34,7 @@ export const ColorsList = () => {
           cursor: 'pointer',
           outline: color.selected ? `5px green solid` : 'none'
         }}
-        onClick={() => dispatch(toggleColorSelected(color))}
+        onClick={() => dispatch(colorToggled(color))}
       >
         {color.name}
       </div>

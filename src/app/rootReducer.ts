@@ -1,5 +1,5 @@
 import { combineReducers } from '@reduxjs/toolkit'
-import colorsReducer from '../features/colors/colorsSlice'
+import { colorsReducer } from '../features/colors/colorsReducer'
 
 const colors = { colors: colorsReducer }
 
