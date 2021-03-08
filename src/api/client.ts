@@ -1,43 +1,55 @@
 // A tiny wrapper around fetch(), borrowed from
 // https://kentcdodds.com/blog/replace-axios-with-a-simple-custom-fetch-wrapper
 
+interface ApiClientService {
+  abort(): void,
+  execute<T>(endpoint: string, requestOptions: RequestInit): Promise<T>
+}
+
 // TODO: add retry-ability
-export async function client<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
-  const { body, ...customConfig } = requestOptions
-  const headers = { 'Content-Type': 'application/json' }
+export class ApiClient implements ApiClientService {
+  controller: AbortController
 
-  const config: RequestInit = {
-    method: body ? 'POST' : 'GET',
-    ...customConfig,
-    headers: {
-      ...headers,
-      ...customConfig.headers,
-    },
+  constructor() {
+    this.controller = new AbortController()
   }
 
-  if (body) {
-    config.body = JSON.stringify(body)
+  abort() {
+    this.controller.abort()
   }
 
-  let data
-  try {
-    const response = await window.fetch(endpoint, config)
-    data = await response.json() as T
-    if (response.ok) {
-      return data
+  async execute<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
+    const { body, ...customConfig } = requestOptions
+    const headers = { 'Content-Type': 'application/json' }
+
+    const config: RequestInit = {
+      method: body ? 'POST' : 'GET',
+      ...customConfig,
+      headers: {
+        ...headers,
+        ...customConfig.headers,
+      },
+      signal: this.controller.signal
     }
-    throw new Error(response.statusText)
-  } catch (err) {
-    return Promise.reject(err.message ? err.message : data)
+
+    if (body) {
+      config.body = JSON.stringify(body)
+    }
+
+    let data
+    try {
+      const response = await window.fetch(endpoint, config)
+
+      console.log('api response: ', response)
+
+      if (response.ok) {
+        data = await response.json() as T
+        return data
+      }
+
+      throw new Error(response.statusText)
+    } catch (err) {
+      return Promise.reject(err.message ? err.message : data)
+    }
   }
-}
-
-export function clientGet<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
-  return client<T>(endpoint, { ...requestOptions, method: 'GET' })
-}
-
-export function clientPost<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
-  const { body, ...customConfig } = requestOptions
-
-  return client<T>(endpoint, { ...customConfig, body })
 }

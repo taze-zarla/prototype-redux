@@ -1,5 +1,5 @@
-import { all, call, put, takeLatest } from 'redux-saga/effects'
-import { clientGet } from '../api/client'
+import { all, call, cancelled, put, takeLatest } from 'redux-saga/effects'
+import { ApiClient } from '../api/client'
 import { colorsReceived, colorsRequested, colorsRequestFailed } from '../commons/actions'
 import { Color } from '../features/colors/colorsReducer'
 import { CallReturnType } from './sagaTypes'
@@ -10,13 +10,19 @@ import { CallReturnType } from './sagaTypes'
 
 // FIXME: Need proper Typescript assessment/application
 function* fetchColors(action: CallReturnType<typeof colorsRequested>) {
+  const client = new ApiClient()
   try {
-    const response: {colors: Color[]} = yield call(clientGet, `fakeApi/colors/${action.payload}`)
+    const response: {colors: Color[]} = yield client.execute<{colors: Color[]}>(`fakeApi/colors/${action.payload}`)
     const { colors } = response
     yield put(colorsReceived(colors))
   }
   catch(error) {
     yield put(colorsRequestFailed(error))
+  }
+  finally {
+    if (cancelled()) {
+      client.abort()
+    }
   }
 }
 
