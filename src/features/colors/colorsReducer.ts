@@ -39,7 +39,7 @@ export const colorsReducer = createReducer<ColorsState>(initialState, (builder) 
   })
 
   builder.addCase(colorsReceived, (state, action) => {
-    state.colors.push(...action.payload)
+    state.colors = action.payload
     state.status = 'succeeded'
   })
 

@@ -1,5 +1,26 @@
 // A tiny wrapper around fetch(), borrowed from
 // https://kentcdodds.com/blog/replace-axios-with-a-simple-custom-fetch-wrapper
+import fetchRetry from 'fetch-retry'
+
+const wrappedFetch = fetchRetry(fetch)
+
+type RequestDelayFunction = ((
+  attempt: number,
+  error: Error | null,
+  response: Response | null
+) => number);
+
+type RequestRetryOnFunction = ((
+  attempt: number,
+  error: Error | null,
+  response: Response | null
+) => boolean);
+
+interface IRequestInitWithRetry extends RequestInit {
+  retries?: number;
+  retryDelay?: number | RequestDelayFunction;
+  retryOn?: number[] | RequestRetryOnFunction;
+}
 
 interface ApiClientService {
   abort(): void,
@@ -18,18 +39,19 @@ export class ApiClient implements ApiClientService {
     this.controller.abort()
   }
 
-  async execute<T>(endpoint: string, requestOptions: RequestInit = {}): Promise<T> {
+  async execute<T>(endpoint: string, requestOptions: IRequestInitWithRetry = {}): Promise<T> {
     const { body, ...customConfig } = requestOptions
     const headers = { 'Content-Type': 'application/json' }
 
-    const config: RequestInit = {
+    const config: IRequestInitWithRetry = {
       method: body ? 'POST' : 'GET',
       ...customConfig,
       headers: {
         ...headers,
         ...customConfig.headers,
       },
-      signal: this.controller.signal
+      signal: this.controller.signal,
+      retryOn: [503]
     }
 
     if (body) {
@@ -38,12 +60,13 @@ export class ApiClient implements ApiClientService {
 
     let data
     try {
-      const response = await window.fetch(endpoint, config)
-
+      const response = await wrappedFetch(endpoint, config)
       console.log('api response: ', response)
 
       if (response.ok) {
         data = await response.json() as T
+        console.log('data', data)
+
         return data
       }
 

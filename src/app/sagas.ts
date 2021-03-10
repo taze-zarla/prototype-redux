@@ -1,6 +1,7 @@
 import { all, call, cancelled, put, takeLatest } from 'redux-saga/effects'
 import { ApiClient } from '../api/client'
 import { colorsReceived, colorsRequested, colorsRequestFailed } from '../commons/actions'
+import { shuffle } from '../commons/shuffle'
 import { Color } from '../features/colors/colorsReducer'
 import { CallReturnType } from './sagaTypes'
 
@@ -12,9 +13,11 @@ import { CallReturnType } from './sagaTypes'
 function* fetchColors(action: CallReturnType<typeof colorsRequested>) {
   const client = new ApiClient()
   try {
-    const response: {colors: Color[]} = yield client.execute<{colors: Color[]}>(`fakeApi/colors/${action.payload}`)
+    const response: {colors: Color[]} = yield client.execute<{colors: Color[]}>(`http://localhost:4000/colors`)
     const { colors } = response
-    yield put(colorsReceived(colors))
+    const shuffled = shuffle<Color>(colors)
+    console.log(shuffled)
+    yield put(colorsReceived(shuffled.slice(0, action.payload.length)))
   }
   catch(error) {
     yield put(colorsRequestFailed(error))

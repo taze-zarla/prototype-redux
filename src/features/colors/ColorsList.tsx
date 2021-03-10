@@ -17,8 +17,8 @@ export const ColorsList = () => {
 
   const renderedColors = colors.colors.map(color => (
     <div
-      className="color-wrapper"
       key={color.id}
+      className="color-wrapper"
       style={{
         width: '100px',
         height: '100px',

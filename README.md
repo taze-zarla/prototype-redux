@@ -4,6 +4,9 @@ This project was bootstrapped with [Create React App](https://github.com/faceboo
 
 In the project directory, you can run:
 
+### `yarn mock`
+Runs a fake API server on [http://localhost:4000](http://localhost:4000) for a set of random colors.
+
 ### `yarn start`
 
 Runs the app in the development mode.<br />
